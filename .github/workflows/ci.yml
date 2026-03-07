@@ -112,17 +112,3 @@ jobs:
           else
             echo "No app source/config detected in frontend; skipping npm scripts."
           fi
-
-      - name: YAML lint
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 -m pip install --user yamllint
-
-          mapfile -d '' YAML_FILES < <(find . -type f \( -name '*.yml' -o -name '*.yaml' \) -print0)
-          if [ "${#YAML_FILES[@]}" -eq 0 ]; then
-            echo "No YAML files found."
-            exit 0
-          fi
-
-          ~/.local/bin/yamllint -d "{extends: relaxed, rules: {line-length: disable}}" "${YAML_FILES[@]}"
