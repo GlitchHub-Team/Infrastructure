@@ -1,0 +1,16 @@
+name: Infrastructure stop
+description: 'Stop NATS, TimescaleDB, NATS Manager and Credentials'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Stop integration dependencies
+      shell: bash
+      run: |
+        set -euo pipefail
+        echo "Spegnimento infrastruttura..."
+        docker compose -f Infrastructure/docker-compose.yml down -v -t 5 || {
+          echo "Tentativo di spegnimento forzato del progetto..."
+          docker compose -f Infrastructure/docker-compose.yml kill
+          docker compose -f Infrastructure/docker-compose.yml rm -f -v
+        }
