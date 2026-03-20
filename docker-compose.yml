@@ -6,7 +6,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "${POSTGRES_PORT}:5432"
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     volumes:
       - timescale-ci-data:/var/lib/postgresql/data
       - ./timescale/schema:/docker-entrypoint-initdb.d:ro
@@ -32,7 +32,7 @@ services:
       NATS_PORT: ${NATS_PORT}
       NATS_HTTP_PORT: ${NATS_HTTP_PORT}
       NATS_SYS_ACCOUNT_ID: ${NATS_SYS_ACCOUNT_ID}
-      NATS_SENSOR_DATA_CORE_ID: ${NATS_SENSOR_DATA_CORE_ID}
+      NATS_APPLICATION_CORE_ID: ${NATS_APPLICATION_CORE_ID}
     volumes:
       - ./nats/nats.conf:/etc/nats/nats.conf:ro
       - ./nats/certs:/etc/nats/certs:ro
