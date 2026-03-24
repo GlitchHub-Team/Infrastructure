@@ -69,6 +69,32 @@ runs:
       shell: bash
       run: |
         set -euo pipefail
+
+        required_envs=(
+          POSTGRES_DB
+          POSTGRES_USER
+          POSTGRES_PASSWORD
+          POSTGRES_PORT
+          NATS_HOST
+          NATS_PORT
+          NATS_HTTP_PORT
+          NATS_ENCRYPTION_KEY
+          NATS_SYS_ACCOUNT_ID
+          NATS_APPLICATION_CORE_ID
+        )
+
+        missing_envs=()
+        for env_name in "${required_envs[@]}"; do
+          if [ -z "${!env_name:-}" ]; then
+            missing_envs+=("$env_name")
+          fi
+        done
+
+        if [ ${#missing_envs[@]} -ne 0 ]; then
+          printf '::error::Missing required environment variables for Infrastructure/docker-compose.yml: %s\n' "${missing_envs[*]}"
+          exit 1
+        fi
+
         docker compose -f Infrastructure/docker-compose.yml down -v
         docker compose -f Infrastructure/docker-compose.yml up -d
 
