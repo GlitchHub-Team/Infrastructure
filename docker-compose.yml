@@ -5,16 +5,46 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGPORT: ${POSTGRES_PORT}
     ports:
       - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     volumes:
-      - timescale-ci-data:/var/lib/postgresql/data
+      - timescale-data:/var/lib/postgresql/data
       - ./timescale/schema:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 20
+    
+  cloud-db:
+    image: postgres:18.3
+
+    environment:
+      POSTGRES_DB: ${CLOUD_POSTGRES_DB}
+      POSTGRES_USER: ${CLOUD_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${CLOUD_POSTGRES_PASSWORD}
+      PGPORT: ${CLOUD_POSTGRES_PORT}
+    volumes:
+      - pgdata:/var/lib/postgresql
+    ports:
+      - "${CLOUD_POSTGRES_PORT}:${CLOUD_POSTGRES_PORT}"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${CLOUD_POSTGRES_USER} -d ${CLOUD_POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+
+  adminer:
+    image: adminer
+    restart: always
+    environment:
+      - ADMINER_DEFAULT_SERVER=${CLOUD_POSTGRES_HOST}
+    ports:
+      - "6767:8080"
+    depends_on:
+      - cloud-db
 
   nats:
     image: nats:2.12.5
@@ -52,5 +82,6 @@ services:
       NATS_URL: nats://nats:${NATS_PORT}
 
 volumes:
-  timescale-ci-data:
+  timescale-data:
+  pgdata:
   nats-js-data:
