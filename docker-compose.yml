@@ -49,7 +49,7 @@ services:
       - ./natsManager/stream_setupper.creds:/stream_setupper.creds:ro
     entrypoint: ["sh", "/setup-nats.sh"]
     environment:
-      NATS_URL: nats://${NATS_HOST}:${NATS_PORT}
+      NATS_URL: nats://nats:${NATS_PORT}
 
 volumes:
   timescale-ci-data:
