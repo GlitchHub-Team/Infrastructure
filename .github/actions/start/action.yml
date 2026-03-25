@@ -1,19 +1,18 @@
 name: Infrastructure setup
-description: 'Sets up NATS, TimescaleDB, NATS Manager and Credentials'
+description: "Sets up NATS, TimescaleDB, NATS Manager and Credentials"
 inputs:
   NATS_STREAM_SETUPPER_CREDS:
-    description: 'NATS Stream Setupper Credentials'
+    description: "NATS Stream Setupper Credentials"
     required: true
   NATS_SERVER_TLS_KEY:
-    description: 'NATS Server Key TLS'
+    description: "NATS Server Key TLS"
     required: true
   GATEWAY1_CREDS:
-    description: 'Gateway 1 Credentials'
+    description: "Gateway 1 Credentials"
     required: true
   GATEWAY2_CREDS:
-    description: 'Gateway 2 Credentials'
+    description: "Gateway 2 Credentials"
     required: true
-  
 
 runs:
   using: "composite"
@@ -75,24 +74,28 @@ runs:
         echo "Recupero ID del container nats-manager..."
         MANAGER_ID=$(docker compose -f Infrastructure/docker-compose.yml ps -q nats-manager)
 
-        if [ -z "$MANAGER_ID" ]; then
-          echo "ERRORE: Impossibile trovare l'ID del container nats-manager"
-          docker compose -f Infrastructure/docker-compose.yml ps
-          exit 1
-        fi
+        echo "Attendendo che il setup di NATS sia completato..."
 
-        echo "Attendendo il completamento del setup di NATS (ID: $MANAGER_ID)..."
+        # Loop di attesa sui log
+        TIMEOUT=60
+        COUNTER=0
+        until docker logs "$MANAGER_ID" 2>&1 | grep -q "Setup completed!"; do
+          if [ $COUNTER -ge $TIMEOUT ]; then
+            echo "ERRORE: Timeout raggiunto. Il setup non è terminato entro $TIMEOUT secondi."
+            docker compose -f Infrastructure/docker-compose.yml logs nats-manager
+            exit 1
+          fi
+          
+          # Controllo se il container è crashato nel frattempo
+          if ! docker ps -q --filter "id=$MANAGER_ID" | grep -q . ; then
+            echo "ERRORE: Il container nats-manager si è fermato inaspettatamente."
+            docker compose -f Infrastructure/docker-compose.yml logs nats-manager
+            exit 1
+          fi
 
-        docker wait "$MANAGER_ID"
+          echo "Setup in corso... ($COUNTER/$TIMEOUT)"
+          sleep 2
+          COUNTER=$((COUNTER + 2))
+        done
 
-        EXIT_CODE=$(docker inspect "$MANAGER_ID" --format='{{.State.ExitCode}}')
-
-        if [ "$EXIT_CODE" -ne 0 ]; then
-          echo "ERRORE: Il setup di NATS (nats-manager) è fallito con codice $EXIT_CODE"
-          docker compose -f Infrastructure/docker-compose.yml logs nats-manager
-          exit 1
-        fi
-
-        echo "Setup NATS completato con successo (Exit Code 0). Avvio dei test..."
-
-
+        echo "Setup NATS rilevato nei log! Procedo con i test..."
