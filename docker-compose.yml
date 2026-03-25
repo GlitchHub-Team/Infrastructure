@@ -85,7 +85,7 @@ services:
       - nsc-config-internal:/nsc/.config/nats/nsc
     entrypoint: ["sh", "-c", "/setup-nats.sh && tail -f /dev/null"]
     environment:
-      NATS_URL: nats://${NATS_HOST}:${NATS_PORT}
+      NATS_URL: nats://nats:${NATS_PORT}
       NSC_STORES: /nsc/stores
       NKEYS_PATH: /nsc/keys
     restart: always
