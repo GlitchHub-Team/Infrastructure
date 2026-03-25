@@ -23,3 +23,7 @@ Sono presenti nella cartella di testCreds:
 - gateway1.creds: private key e JWT per il gateway1, da popolare con il contenuto su Bitwarden nella cartella *Infrastructure*, gateway1.creds
 - gateway2.pub: public key del gateway2
 - gateway2.creds: private key e JWT per il gateway2, da popolare con il contenuto su Bitwarden nella cartella *Infrastructure*, gateway2.creds
+
+# Utilizzare NATS Manager
+- Scoprire il nome del container di NATS Manager con il comando `docker ps --format "{{.Names}}"`
+- Aprire una shell nel container di NATS Manager con il comando `docker exec -it <nome_container> sh`

@@ -16,7 +16,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 20
-    
+
   cloud-db:
     image: postgres:18.3
 
@@ -30,11 +30,14 @@ services:
     ports:
       - "${CLOUD_POSTGRES_PORT}:${CLOUD_POSTGRES_PORT}"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${CLOUD_POSTGRES_USER} -d ${CLOUD_POSTGRES_DB}"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${CLOUD_POSTGRES_USER} -d ${CLOUD_POSTGRES_DB}",
+        ]
       interval: 5s
       timeout: 5s
       retries: 5
-
 
   adminer:
     image: adminer
@@ -77,11 +80,18 @@ services:
       - ./natsManager/setup-nats.sh:/setup-nats.sh:ro
       - ./natsManager/ca.pem:/ca.pem:ro
       - ./natsManager/stream_setupper.creds:/stream_setupper.creds:ro
-    entrypoint: ["sh", "/setup-nats.sh"]
+      - ./natsManager/stores:/nsc/stores
+      - ./natsManager/keys:/nsc/keys
+      - nsc-config-internal:/nsc/.config/nats/nsc
+    entrypoint: ["sh", "-c", "/setup-nats.sh && tail -f /dev/null"]
     environment:
-      NATS_URL: nats://nats:${NATS_PORT}
+      NATS_URL: nats://${NATS_HOST}:${NATS_PORT}
+      NSC_STORES: /nsc/stores
+      NKEYS_PATH: /nsc/keys
+    restart: always
 
 volumes:
   timescale-data:
   pgdata:
   nats-js-data:
+  nsc-config-internal:

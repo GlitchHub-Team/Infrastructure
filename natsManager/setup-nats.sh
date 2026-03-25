@@ -47,6 +47,8 @@ for _ in $(seq 1 30); do
   sleep 1
 done
 
+nsc env --data-dir /nsc/stores --keystore-dir /nsc/keys
+
 if ! nats_cli stream ls >/dev/null 2>&1; then
   echo "NATS is not ready after waiting" >&2
   exit 1
