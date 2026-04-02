@@ -88,7 +88,6 @@ services:
       NATS_URL: nats://nats:${NATS_PORT}
       NSC_STORES: /nsc/stores
       NKEYS_PATH: /nsc/keys
-    restart: always
 
 volumes:
   timescale-data:
