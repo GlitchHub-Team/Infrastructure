@@ -1,0 +1,65 @@
+name: Infrastructure init
+description: "Inits NATS, TimescaleDB, NATS Manager and Credentials"
+inputs:
+  NATS_STREAM_SETUPPER_CREDS:
+    description: "NATS Stream Setupper Credentials"
+    required: true
+  NATS_SERVER_TLS_KEY:
+    description: "NATS Server Key TLS"
+    required: true
+  GATEWAY1_CREDS:
+    description: "Gateway 1 Credentials"
+    required: true
+  GATEWAY2_CREDS:
+    description: "Gateway 2 Credentials"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout Infrastruttura
+      uses: actions/checkout@v4
+      with:
+        repository: GlitchHub-Team/Infrastructure
+        path: Infrastructure
+
+    - name: Init integration credentials
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        if [ -z "${{ inputs.NATS_STREAM_SETUPPER_CREDS }}" ]; then
+          echo "::error::Missing secret NATS_STREAM_SETUPPER_CREDS"
+          exit 1
+        fi
+
+        mkdir -p Infrastructure/natsManager
+        printf '%s\n' "${{ inputs.NATS_STREAM_SETUPPER_CREDS }}" > Infrastructure/natsManager/stream_setupper.creds
+
+        chmod 600 Infrastructure/natsManager/stream_setupper.creds
+
+        if [ -z "${{ inputs.GATEWAY1_CREDS }}" ]; then
+          echo "::error::Missing secret GATEWAY1_CREDS"
+          exit 1
+        fi
+
+        if [ -z "${{ inputs.GATEWAY2_CREDS }}" ]; then
+          echo "::error::Missing secret GATEWAY2_CREDS"
+          exit 1
+        fi
+
+        mkdir -p Infrastructure/testCreds
+        printf '%s\n' "${{ inputs.GATEWAY1_CREDS }}" > Infrastructure/testCreds/gateway1.creds
+        printf '%s\n' "${{ inputs.GATEWAY2_CREDS }}" > Infrastructure/testCreds/gateway2.creds
+        chmod 600 Infrastructure/testCreds/gateway1.creds Infrastructure/testCreds/gateway2.creds
+
+        if [ ! -f Infrastructure/nats/certs/server.key ]; then
+          if [ -z "${{ inputs.NATS_SERVER_TLS_KEY }}" ]; then
+            echo "::error::Missing secret NATS_SERVER_TLS_KEY (required when Infrastructure/nats/certs/server.key is not committed)"
+            exit 1
+          fi
+
+          mkdir -p Infrastructure/nats/certs
+          printf '%s\n' "${{ inputs.NATS_SERVER_TLS_KEY }}" > Infrastructure/nats/certs/server.key
+          chmod 600 Infrastructure/nats/certs/server.key
+        fi
