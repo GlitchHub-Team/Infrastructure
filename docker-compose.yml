@@ -88,6 +88,20 @@ services:
       NATS_URL: nats://nats:${NATS_PORT}
       NSC_STORES: /nsc/stores
       NKEYS_PATH: /nsc/keys
+  
+  nats-exporter:
+    image: natsio/prometheus-nats-exporter:0.19.2
+    env_file:
+        - .env
+    ports:
+        - "7777:7777"
+    command:
+        - "-varz"
+        - "http://${NATS_HOST}:${NATS_HTTP_PORT}"
+    volumes:
+        - ./natsExporter/certs/ca.pem:/etc/nats/certs/ca.pem:ro
+    depends_on:
+        - nats
 
 volumes:
   timescale-data:
