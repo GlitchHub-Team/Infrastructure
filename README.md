@@ -36,7 +36,6 @@ L'exporter NATS raccoglie:
 - metriche NATS base da `varz`
 - connessioni e subscriptions da `connz`
 - stato salute da `healthz`
-- metriche account da `accstatz`
 - metriche JetStream da `jsz=all`
 
 Le dashboard Grafana provisionate sono:
