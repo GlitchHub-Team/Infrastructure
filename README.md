@@ -27,3 +27,24 @@ Sono presenti nella cartella di testCreds:
 # Utilizzare NATS Manager
 - Scoprire il nome del container di NATS Manager con il comando `docker ps --format "{{.Names}}"`
 - Aprire una shell nel container di NATS Manager con il comando `docker exec -it <nome_container> sh`
+
+# Monitoring
+
+Il monitoraggio e' integrato nello stack Infrastructure tramite Prometheus, Grafana e `nats-exporter`.
+
+L'exporter NATS raccoglie:
+- metriche NATS base da `varz`
+- connessioni e subscriptions da `connz`
+- stato salute da `healthz`
+- metriche JetStream da `jsz=all`
+
+Le dashboard Grafana provisionate sono:
+- `NATS Overview`: salute broker, connessioni, subscriptions, slow consumers, messaggi/s e bytes/s
+- `JetStream Overview`: stream, storage per stream, consumer, backlog, ack pending e redelivery
+- `Dashboard API Overview`: stato backend Dashboard, richieste/s, status code, latenza p95 per endpoint e endpoint piu' trafficati
+
+Prometheus raccoglie anche le metriche HTTP del backend Dashboard da `dashboard:8080/metrics`.
+Questo target e' raggiungibile quando lo stack Infrastructure viene avviato insieme al compose della repository Dashboard.
+
+Prometheus espone la UI su `http://localhost:9090`, Grafana su `http://localhost:3000`.
+

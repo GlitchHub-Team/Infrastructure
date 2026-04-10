@@ -95,7 +95,10 @@ services:
         - "7777:7777"
     command:
         - "-varz"
-        - "http://${NATS_HOST}:${NATS_HTTP_PORT}"
+        - "-connz"
+        - "-healthz"
+        - "-jsz=all"
+        - "http://${NATS_HOST:-nats}:${NATS_HTTP_PORT:-8222}"
     volumes:
         - ./natsExporter/certs/ca.pem:/etc/nats/certs/ca.pem:ro
     depends_on:
@@ -118,9 +121,9 @@ services:
     ports:
     - "3000:3000"
     environment:
-    - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
-    - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
-    - GF_USERS_ALLOW_SIGN_UP=${GF_USERS_ALLOW_SIGN_UP}
+    - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER:-admin}
+    - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD:-admin}
+    - GF_USERS_ALLOW_SIGN_UP=${GF_USERS_ALLOW_SIGN_UP:-false}
     volumes:
     - ./grafana/provisioning:/etc/grafana/provisioning:ro
     - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
