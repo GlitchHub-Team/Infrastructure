@@ -47,4 +47,4 @@ Prometheus raccoglie anche le metriche HTTP del backend Dashboard da `dashboard:
 Questo target e' raggiungibile quando lo stack Infrastructure viene avviato insieme al compose della repository Dashboard.
 
 Prometheus espone la UI su `http://localhost:9090`, Grafana su `http://localhost:3000`.
-Le credenziali Grafana sono configurate dalle variabili `GF_SECURITY_ADMIN_USER`, `GF_SECURITY_ADMIN_PASSWORD` e `GF_USERS_ALLOW_SIGN_UP` nel file `.env`.
+
