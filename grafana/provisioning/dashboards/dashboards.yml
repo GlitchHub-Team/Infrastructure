@@ -8,4 +8,13 @@ providers:
     disableDeletion: true
     editable: false
     options:
-      path: /var/lib/grafana/dashboards
+      path: /var/lib/grafana/dashboards/nats
+
+  - name: "Dashboard API"
+    orgId: 1
+    folder: "Dashboard API"
+    type: file
+    disableDeletion: true
+    editable: false
+    options:
+      path: /var/lib/grafana/dashboards/dashboard-api
