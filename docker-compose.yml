@@ -82,6 +82,8 @@ services:
       - ./natsManager/stream_setupper.creds:/stream_setupper.creds:ro
       - ./natsManager/stores:/nsc/stores
       - ./natsManager/keys:/nsc/keys
+      - ./natsManager/create-tenant.sh:/create-tenant.sh
+      - ./natsManager/create-gateway.sh:/create-gateway.sh
       - nsc-config-internal:/nsc/.config/nats/nsc
     entrypoint: ["sh", "-c", "/setup-nats.sh && tail -f /dev/null"]
     environment:
