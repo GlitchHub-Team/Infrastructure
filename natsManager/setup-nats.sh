@@ -16,10 +16,11 @@ nats_cli() {
 ensure_stream() {
   name="$1"
   subject="$2"
+  retention="$3"
 
   if nats_cli stream add "$name" \
     --subjects "$subject" \
-    --retention limits \
+    --retention "$retention" \
     --storage file \
     --defaults >/dev/null 2>&1; then
     echo "Stream $name created"
@@ -32,7 +33,7 @@ ensure_stream() {
   fi
 
   echo "Stream $name already exists, trying subject update..."
-  if nats_cli stream update "$name" --subjects "$subject" >/dev/null 2>&1; then
+  if nats_cli stream update "$name" --subjects "$subject" --retention "$retention" >/dev/null 2>&1; then
     echo "Stream $name updated"
   else
     echo "Stream $name exists (subject update skipped: unsupported options or immutable config)"
@@ -54,7 +55,7 @@ if ! nats_cli stream ls >/dev/null 2>&1; then
   exit 1
 fi
 
-ensure_stream "$STREAM_NAME" "$SUBJECT"
-ensure_stream "$HELLO_STREAM_NAME" "$HELLO_SUBJECT"
+ensure_stream "$STREAM_NAME" "$SUBJECT" "workqueue"
+ensure_stream "$HELLO_STREAM_NAME" "$HELLO_SUBJECT" "workqueue"
 
 echo "Setup completed!"
