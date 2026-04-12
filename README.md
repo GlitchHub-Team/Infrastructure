@@ -39,12 +39,10 @@ L'exporter NATS raccoglie:
 - metriche JetStream da `jsz=all`
 
 Le dashboard Grafana provisionate sono:
-- `NATS Overview`: salute broker, connessioni, subscriptions, slow consumers, messaggi/s e bytes/s
-- `JetStream Overview`: stream, storage per stream, consumer, backlog, ack pending e redelivery
-- `Dashboard API Overview`: stato backend Dashboard, richieste/s, status code, latenza p95 per endpoint e endpoint piu' trafficati
+- cartella `NATS`: `NATS Overview` e `JetStream Overview`
+- cartella `Dashboard API`: `Dashboard API Overview`
 
 Prometheus raccoglie anche le metriche HTTP del backend Dashboard da `dashboard:8080/metrics`.
 Questo target e' raggiungibile quando lo stack Infrastructure viene avviato insieme al compose della repository Dashboard.
 
 Prometheus espone la UI su `http://localhost:9090`, Grafana su `http://localhost:3000`.
-
