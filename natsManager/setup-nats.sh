@@ -55,7 +55,7 @@ if ! nats_cli stream ls >/dev/null 2>&1; then
   exit 1
 fi
 
-ensure_stream "$STREAM_NAME" "$SUBJECT" "workqueue"
-ensure_stream "$HELLO_STREAM_NAME" "$HELLO_SUBJECT" "workqueue"
+ensure_stream "$STREAM_NAME" "$SUBJECT" "work"
+ensure_stream "$HELLO_STREAM_NAME" "$HELLO_SUBJECT" "work"
 
 echo "Setup completed!"
